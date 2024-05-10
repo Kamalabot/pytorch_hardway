@@ -2,3 +2,4 @@
 /runs
 *.log
 .ipynb_checkpoints/
+.vscode

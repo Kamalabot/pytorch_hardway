@@ -2,7 +2,7 @@
 #include <math.h>
 
 // function to add element of two arrays
-
+__global__  // global functions are called kernels, and usually device codes
 void add(int n, float *x, float *y)
 {
     for (int i = 0; i < n; i++)
@@ -12,15 +12,18 @@ void add(int n, float *x, float *y)
 int main(void)
 {
     int N = 1<<20;  // 1M elements ? 
-    float *x = new float[N];
-    float *y = new float[N];
+    float *x, *y;
+    cudaMallocManaged(&x, N*sizeof(float));
+    cudaMallocManaged(&y, N*sizeof(float));
 
     for (int i = 0; i < N; i++){
         x[i] = 1.0f;
         y[1] = 2.0f;
     }
 
-    add(N, x, y);
+    add<<<1, 1>>>(N, x, y);
+    
+    cudaDeviceSynchronize();
 
     // check for error, and values should be 3.0f
     float maxError = 0.0f;
@@ -29,8 +32,8 @@ int main(void)
     std::cout << "Max Error: " << maxError << std::endl;
 
     // free memory
-    delete [] x;
-    delete [] y;
+    cudaFree(x);
+    cudaFree(y);
 
     return 0;
 }
