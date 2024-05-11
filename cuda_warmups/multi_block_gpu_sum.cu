@@ -5,7 +5,12 @@
 __global__  // global functions are called kernels, and usually device codes
 void add(int n, float *x, float *y)
 {
-    for (int i = 0; i < n; i++)
+    int index = blockIdx.x * blockIdx.x + threadIdx.x;
+    // The idea is that each thread gets its index by computing the offset 
+    // to the beginning of its block (the block index times the block size: 
+    // blockIdx.x * blockDim.x)
+    int stride = blockDim.x * gridDim.x;
+    for (int i = index; i < n; i += stride)
         y[i] = x[i] + y[i];
 }
 
@@ -21,7 +26,9 @@ int main(void)
         x[i] = 1.0f;
         y[i] = 2.0f;
     }
-    add<<<1, 1>>>(N, x, y);  // here the kernel is called
+    add<<<1, 256>>>(N, x, y);  // here the kernel is called
+    // 1st parameter is number of thread blocks, and 
+    // 2nd is num of threads per block
     std::cout << y[100];
     
     cudaDeviceSynchronize();  // here the data is synchronized
