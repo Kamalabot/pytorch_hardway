@@ -4,6 +4,9 @@
 // compute vector sum C = A + B
 // each thread peforms one pair-wise addition
 __global__ void vecAddKernel(float *A, float *B, float *C, int n) {
+  printf("ThreadIdx.x is: %d", threadIdx.x);
+  printf("blockIdx.x is: %d", blockIdx.x);
+  printf("blockDim.x is: %d", blockDim.x);
   int i = threadIdx.x + blockDim.x * blockIdx.x;
   if (i < n) {
     C[i] = A[i] + B[i];
@@ -65,15 +68,16 @@ int main() {
   vecAdd(A, B, C, n);
 
   // print result
-  for (int i = 0; i < n; i += 1) {
-    if (i > 0) {
-      printf(", ");
-      if (i % 10 == 0) {
-        printf("\n");
-      }
-    }
-    printf("%8.3f", C[i]);
-  }
-  printf("\n");
+  // for (int i = 0; i < n; i += 1) {
+    // if (i > 0) {
+      // printf(", ");
+      // if (i % 10 == 0) {
+        // printf("\n");
+      // }
+    // }
+    // printf("%8.3f", C[i]);
+  // }
+  // printf("\n");
+  printf("Done with Vector addition");
   return 0;
 }
