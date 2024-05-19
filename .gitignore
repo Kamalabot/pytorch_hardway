@@ -4,3 +4,9 @@
 .ipynb_checkpoints/
 .vscode
 /build_dir
+CMakeFiles/
+Makefile
+cmake_install.cmake
+CMakeCache.txt
+detect_cuda_compute_capabilities.cu
+detect_cuda_version.cc
