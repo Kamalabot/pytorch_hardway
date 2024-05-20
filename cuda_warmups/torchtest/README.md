@@ -9,3 +9,9 @@ queried using torch.utils.cmake_prefix_path variable.
 
 Following is provided in the pytorch docs https://pytorch.org/cppdocs/installing.html 
 -DCMAKE_PREFIX_PATH=/absolute/path/to/libtorch
+
+Compilation Challenges:
+    - CMakeLists work, and the compiler there is g++ which also works 
+    - executable works without any challenge
+    - cmake -S .. -DCMAKE_PREFIX_PATH=/absolute/path/to/libtorch is required 
+ 
