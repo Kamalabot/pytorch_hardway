@@ -30,5 +30,35 @@ they are exclusive. Using Runtime API is easier.
             - Conceptually removing the loops in C / C++ code will provide the CUDA C code.
         - Memory Hierarchy
             - Shared memory can help in controlling the locality of your code. 
-        - Barrier synchronisation:
-             
+        - Barrier synchronisation: Getting the execution of the threads completed
+- Programming Model: Bridge between Appln and underlying hardware.
+    - Communication Boundary, User/System Boundary, Hw/Sw boundary
+- Objective of Programming Model / Heirarchy:
+    - Organize Threads on GPU 
+    - Access the Memory on GPU
+    - Domain Level(Prob soln) -> Logic Level(programming) -> Hardware Level(mapping of threads to cores)
+- Use of variable names to distinguish between the host_memory and device_memory by using the h_ and d_ prefixes 
+- Unified Memory bridges the Host with Device and allows to access their memories using "single pointer".
+- Since the CUDA program is primarily asynchronous, the serial code on host can be complemented by the device parallel code
+
+- Managing Memory:
+    - Allocate Memory : cudaMalloc
+    - Release Memory : cudaFree
+    - Transfer Memory bw host n device : cudaMemcpy 
+    - Global memory is analogous to CPU system memory, 
+    while shared memory is similar to the CPU cache. However, GPU shared memory 
+    can be directly controlled from a CUDA C kernel.
+- Managing Thread:
+    - All threads launched from single kernel is called a grid.
+    Grid is also made of many memory blocks.
+    - All threads in grid are same same global mem space.
+    - Threads inside a block can cooperate using 
+        - Block Local Synchronisation
+        - Block Local Shared Memory
+    - Threads from different blocks cannot coordinate 
+    - The threads are id using threadIdx @ block level and blockIdx at grid level
+        - Based on the blockIdx and threadIdx that is assigned during the 
+        runtime, portion of data can be assigned to each thread.
+        - Dimension of block and grid are specified using blockDim and gridDim
+        - dim3 type is manually defined on host side, while its corresponding uint3
+        is automatically created on the device side.
