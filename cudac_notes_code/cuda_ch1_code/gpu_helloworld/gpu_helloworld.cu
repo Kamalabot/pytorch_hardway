@@ -2,7 +2,9 @@
 using namespace std;
 
 __global__ void helloGPU(void){
-    printf("Hello from GPU...");
+    if (threadIdx.x == 5){
+        printf("Hello from GPU... %d!\n", threadIdx.x);
+    }
 }
 
 int main(){
