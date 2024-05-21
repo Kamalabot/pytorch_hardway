@@ -1,0 +1,20 @@
+cmake_minimum_required(VERSION 3.18)
+
+cmake_policy(SET CMP0104 NEW)
+
+project(gpuhello LANGUAGES CXX C)
+
+set(CMAKE_CXX_STANDARD 11)
+
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+enable_language(CUDA)
+
+find_package(CUDAToolkit REQUIRED)
+
+set(CMAKE_CUDA_STANDARD 11)
+set(CMAKE_CUDA_STANDARD_REQUIRED ON)
+
+add_executable(gpuhello gpu_helloworld.cu)

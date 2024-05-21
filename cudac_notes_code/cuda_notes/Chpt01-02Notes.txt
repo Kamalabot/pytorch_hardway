@@ -1,0 +1,34 @@
+Chapters 01 and 02 Notes:
+
+- Task & Data Parallelism concept, where CUDA is using the Data Parallelism.
+- Next is partitioning Data, where Block / cyclic partitioning is avbl  
+    - Block takes 1 portion of Data while cyclic takes more than one portion of the data
+- Single Instruction Multiple Data refers to Parallel architecture.
+
+- Some terms:
+- Latency: Time it takes for operation to start and complete, referred in MicroSeconds.
+- BandWidth: Amount of Data that can be processed in unit of time. 
+- Throughput: Amount of operation that can processed per unit time, refered as floating Point Ops per sec.
+
+- Main Features that describe a GPU:
+- Num of CUDA Cores & Memory Size
+- Peak Computational Performance & Memory Bandwidth
+
+- Salient point, GPU is used for constant predictable workloads with simple control flow.
+- CUDA allows the execution of Both GPU + CPU in single code execution flow.
+- CUDA can be accessed using Cuda Driver API, Cuda Runtime API. There is no performance difference, but 
+they are exclusive. Using Runtime API is easier. 
+ 
+- Ideas/Concepts Necessary for Parallel Programming:
+    - Locality : Reuse of data to reduce memory latency 
+        - Spatial Locality: Use of elements that is close storage location.
+        - Temporal Locality: use/reuse of data elements within relatively small time durations.
+    - Hirarchies of Execution exposed by Cuda:
+        - Thread Hierarchy 
+            - Kernel takes a serial code, and launches several threads that perform same 
+            operation inside the kernel.
+            - Conceptually removing the loops in C / C++ code will provide the CUDA C code.
+        - Memory Hierarchy
+            - Shared memory can help in controlling the locality of your code. 
+        - Barrier synchronisation:
+             
