@@ -62,3 +62,43 @@ they are exclusive. Using Runtime API is easier.
         - Dimension of block and grid are specified using blockDim and gridDim
         - dim3 type is manually defined on host side, while its corresponding uint3
         is automatically created on the device side.
+- Kernel Calling:
+    - <<<grid, block>>> is used for informing how many threads the kernel should launch, 
+    and what is the layout of those threads using the grid.
+    - Take a 32 element vector, which can be allocated threads in <<<4, 8>>>, <<<32, 1>>>, 
+    <<<1, 32>>> or even <<<8, 4>>>, all of these are valid.
+        - think about the nElem + blkSize - 1 / blkSize formula, 32 + 4 - 1 / 4 will be 
+        35/4 that resolves to 8, which is another way of deciding the num of blocks.
+    - Kernel can be forced to execute in sequential mode using <<<1, 1>>>, and inside 
+    the for loop can be executed.
+    - After the kernel is called, the control is immediately returned to the C code, 
+    and its other sequential activities can be done.  
+    - The following restrictions apply for all kernels:
+        ➤ Access to device memory only
+        ➤ Must have void return type
+        ➤ No support for a variable number of arguments
+        ➤ No support for static variables
+        ➤ No support for function pointers
+        ➤ Exhibit an asynchronous behavior 
+    - Calculate Row-Major index of the array by using the below formula
+        rowIdx = blockIdx.x * blockDim.x + threadIdx.x
+        check if rowIdx is within the array length using (rowIdx < N)
+    -> For Fermi devices, the maximum number of threads per block is 1,024, and the 
+        maximum grid dimension for each x, y, and z dimension is 65,535.
+    - Compute to Communication Ratio is either > 1 or < 1. If > 1, then it is computing 
+    for longer time, than transferring so overlap compute. If < 1, then transferring is 
+    taking more time, so reduce the transfering 
+- Optimizing parallel threads:
+    - Three Indices to manage:
+        - Thread & Block Idx, Coordinates of given data in matrix, offset in Linear Global memory
+    - How to get the global Offset:
+        - Find row and column major idx (ix and iy)
+        - used idx = iy * nx + ix where nx is the x dim of the matrix/data used
+    - Just increasing the blocks in kernel call is not going to increase performance, 
+    there is a tradeoff.
+
+- Managing devices:
+    - Using CUDA Device APIs 
+    - Using Nvidia SMI tool:
+        - nvidia-smi -q -i 0 -d MEMORY | tail -n 5
+        - nvidia-smi -q -i 0 -d UTILIZATION | tail -n 4
