@@ -4,6 +4,8 @@
 using namespace std;
 
 int main(){
+    // calculating the grid block counts based on the elements, 
+    // and threads in the block
     int nElem = 1024;
     dim3 block (1024);
     dim3 grid ((nElem + block.x - 1)/block.x);
