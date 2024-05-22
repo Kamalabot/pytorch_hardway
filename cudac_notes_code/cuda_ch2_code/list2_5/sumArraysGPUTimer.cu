@@ -1,18 +1,18 @@
 #include <iostream>
 #include <ctime>
+#include <sys/time.h>
 #include <cuda_runtime.h>
 
 using namespace std;
 
-#define CHECK(call)
-{
-    const cudaError_t error = call;
-    if (error != cudaSuccess)
-    {
-        cout << "Error: " << __FILE__ << "Line: " << __LINE__ << endl;
-        cout << "code: " << error << "reason: " << cudaGetErrorString(error) << endl;
-        exit(1);
-    }
+#define CHECK(call)                                                                 \
+{                                                                                   \
+    const cudaError_t error = call;                                                 \
+    if (error != cudaSuccess)                                                       \
+    {                                                                               \
+        cout << "code: " << error << "reason: " << cudaGetErrorString(error) << endl;\
+        exit(1);                                                                    \
+    }                                                                               \
 }
 
 double cpuSecond(){
@@ -26,7 +26,7 @@ void checkResult(float *hostRef, float *gpuRef, const int N){
     bool match = 1;
     for (int i = 0; i < N; i++){
         if(abs(hostRef[i] - gpuRef[i]) > epsilon){
-            match = 0
+            match = 0;
             cout << "Arrays do not match." << endl;
             cout << "host: " << hostRef[i] << "gpu: " << gpuRef[i] << endl;
             break;
@@ -42,7 +42,7 @@ void sumArrayOnHost(float *a, float *b, float *c, const int N){
 }
 
 void initialData(float *ip, int size){
-    time_t t;  // t is of time time_t, and its address is sent to srand
+    // time_t t;  // t is of time time_t, and its address is sent to srand
     // srand((unsigned int) time(&t)); // the returned time_t value is casted
     srand(static_cast<unsigned int>(time(0)));
     for (int j=0; j < size; j++){
@@ -65,7 +65,7 @@ int main(){
     int dev = 0; // setup device to be 0
     cudaSetDevice(dev);
     cudaDeviceProp devProp;
-    CHECK(cudaGetDeviceProperties(&deviceProp, dev))
+    CHECK(cudaGetDeviceProperties(&devProp, dev))
     cout << "Using device: " << dev << " Named as: " << devProp.name << endl;
 
     int nElem = 32; // set data
@@ -93,15 +93,15 @@ int main(){
     memset(gpuRef, 0, nBytes);
 
     float *d_A, *d_B, *d_C;
-    cudaMalloc((float **)&d_A , nBytes)
+    cudaMalloc((float **)&d_A , nBytes);
     // &d_A is address in device memory, which is holding the 
     // pointer to the array of data
-    cudaMalloc((float **)&d_B , nBytes)
-    cudaMalloc((float **)&d_C , nBytes)
+    cudaMalloc((float **)&d_B , nBytes);
+    cudaMalloc((float **)&d_C , nBytes);
 
     // move data from host to device
-    cudaMemCpy(d_A, h_A, nBytes, cudaMemcpyHostToDevice);
-    cudaMemCpy(d_B, h_B, nBytes, cudaMemcpyHostToDevice);
+    cudaMemcpy(d_A, h_A, nBytes, cudaMemcpyHostToDevice);
+    cudaMemcpy(d_B, h_B, nBytes, cudaMemcpyHostToDevice);
 
     // invoke kernel at host side
     dim3 block (nElem);
@@ -113,12 +113,12 @@ int main(){
     // ensure all threads have been completed, data transfer is not considered 
     double iEl = cpuSecond() - iSt;
     cout << "grid.x " << grid.x << "block.x " << block.x << endl;
-    cout << "Time elapsed on GPU Kernel" << iEl << " secs";
+    cout << "Time elapsed on GPU Kernel " << iEl << " secs " << endl;
 
     cudaMemcpy(gpuRef, d_C, nBytes, cudaMemcpyDeviceToHost);
-    double iSt = cpuSecond()
-    sumArraysOnHost(h_A, h_B, hostRef, nElem);
-    double iEl = cpuSecond() - iSt;
+    iSt = cpuSecond();
+    sumArrayOnHost(h_A, h_B, hostRef, nElem);
+    iEl = cpuSecond() - iSt;
 
     cout << "Time elapsed on Host function " << iEl << " secs";
     checkResult(hostRef, gpuRef, nElem);
