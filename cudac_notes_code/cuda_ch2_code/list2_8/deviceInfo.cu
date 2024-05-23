@@ -1,14 +1,15 @@
 #include <cuda_runtime.h>
 #include <iostream>
+using namespace std;
 
 int main(){
     int devCount = 0;
     cudaError_t error_id = cudaGetDeviceCount(&devCount);
 
     if (error_id != cudaSuccess){
-        cout << "Cuda device count returned: " << "Error id: " << error_id << "Error: " << cudaErrorString(error_id) << endl;
+        cout << "Cuda device count returned: " << "Error id: " << error_id << "Error: " << cudaGetErrorString(error_id) << endl;
         cout << "Result: Failed" << endl;
-        exit(EXIT_FAILURE)
+        exit(EXIT_FAILURE);
     }
 
     if (devCount == 0){
@@ -24,7 +25,7 @@ int main(){
     cudaDeviceProp deviceProp;
     cudaGetDeviceProperties(&deviceProp, dev)
 
-    cout << "Device no: " << dev << " and Device Name: " << deviceProp.name); 
+    cout << "Device no: " << dev << " and Device Name: " << deviceProp.name; 
 
     cudaDriverGetVersion(&driverVersion);  // gets the driver version
     cudaRuntimeGetVersion(&runtimeVersion);  // gets runtime version
@@ -36,7 +37,7 @@ int main(){
     
     cout << "Total Amount of Global Memory: " << deviceProp.totalGlobalMem / (pow(1024.0, 3)) << " MBytes" << endl;
 
-    cout << "Max Multi-processor: " < deviceProps.multiProcessorCount << endl;
+    cout << "Max Multi-processor: " << deviceProp.multiProcessorCount << endl;
 
     cout << "GPU Clock Rate: " << deviceProp.clockRate * 1e-3f << endl;
     

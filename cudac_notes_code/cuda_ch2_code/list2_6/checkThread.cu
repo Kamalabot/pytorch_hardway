@@ -1,17 +1,16 @@
 #include <cuda_runtime.h>
 #include <iostream>
+#include <sys/time.h>
 
 using namespace std;
-
-#define CHECK(call)
-{
-    const cudaError_t error = call;
-    if (error != cudaSuccess)
-    {
-        cout << "Error: " << __FILE__ << "Line: " << __LINE__ << endl;
-        cout << "code: " << error << "reason: " << cudaGetErrorString(error) << endl;
-        exit(1);
-    }
+#define CHECK(call)                                                                 \
+{                                                                                   \
+    const cudaError_t error = call;                                                 \
+    if (error != cudaSuccess)                                                       \
+    {                                                                               \
+        cout << "code: " << error << "reason: " << cudaGetErrorString(error) << endl;\
+        exit(1);                                                                    \
+    }                                                                               \
 }
 
 double cpuSecond(){
