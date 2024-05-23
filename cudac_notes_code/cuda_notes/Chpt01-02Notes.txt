@@ -9,6 +9,7 @@ Chapters 01 and 02 Notes:
 - Latency: Time it takes for operation to start and complete, referred in MicroSeconds.
 - BandWidth: Amount of Data that can be processed in unit of time. 
 - Throughput: Amount of operation that can processed per unit time, refered as floating Point Ops per sec.
+    - These three are limiting resources, which are required to be optimized with profilers.
 
 - Main Features that describe a GPU:
 - Num of CUDA Cores & Memory Size
@@ -25,7 +26,7 @@ they are exclusive. Using Runtime API is easier.
         - Temporal Locality: use/reuse of data elements within relatively small time durations.
     - Hirarchies of Execution exposed by Cuda:
         - Thread Hierarchy 
-            - Kernel takes a serial code, and launches several threads that perform same 
+            - Kernel takes a serial code, and launches several threads(exec units) that perform same 
             operation inside the kernel.
             - Conceptually removing the loops in C / C++ code will provide the CUDA C code.
         - Memory Hierarchy
@@ -49,6 +50,8 @@ they are exclusive. Using Runtime API is easier.
     while shared memory is similar to the CPU cache. However, GPU shared memory 
     can be directly controlled from a CUDA C kernel.
 - Managing Thread:
+    - GigaThread engine is a global scheduler that distributes thread blocks to the SM 
+    warp schedulers.
     - All threads launched from single kernel is called a grid.
     Grid is also made of many memory blocks.
     - All threads in grid are same same global mem space.

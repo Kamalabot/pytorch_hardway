@@ -1,0 +1,57 @@
+GPU Arch is based on the Streaming Multiprocessor
+
+Key Components of SM:
+    - CUDA Cores
+        - Fully pipelined ALU and Floating Processing unit
+        - Executes one int / fp per cycle
+    - Shared Memory / L1 Cache (first precious resource)
+    - Register File (32,768 * 32 bit >> 128 MB of registers)
+        - The above 3 are partitioned among the thread blocks 
+        residing inside the SMs.
+    - Load / Store Units
+        - source and destination addresses are calculated for single threads
+    - Special Functions
+        - Intrinsic functions like sin, 
+    - Warp Scheduler, Dispatch Unit, Instruction Cache
+        - Number of active warps is restricted per SM, and it defines 
+        amount of parallelism possible.
+        - Warp scheduler issues one instruction from each warp to a group 
+        of 16 CUDA Cores, 16 L/S units, or 4 SFUs.
+
+Once a kernel is executed the threads are placed inside the SM, and multiple threads 
+execute in parallel inside SM. 
+
+CUDA employs Single Instruction Multi Thread Arch, to manage the 32 wraps
+    Each Thread contains:
+        - Instruction address counter
+        - Register state
+        - Has the instruction to execute (Execution path)
+    SM partitions the threads assigned to it, into 32-thread warps
+
+SIMT & SIMD : Broadcasts same instructions to multiple threads / exec units.
+SIMT allows individual threads to execute independently
+
+Why profile Driven development:
+    - Help to locate the performance bottlenecks
+    - How compute resources are being utilized
+    - Abstraction of hardware architecture enabling
+    control thread concurrency. Measure visualize and guide
+    optimisation.
+
+About Counters:
+    - Event is a countable activity that corresponds to a hardware counter 
+collected during kernel execution. 
+
+    - Metric is a characteristic that is calculated from one or more events.
+
+    - Most counters are reported per SM. Single run can collect only few counters
+
+Understanding Warp Execution:
+- Threads Blocks are first distributed to the SM 
+
+- In SMs the threads in the thread blocks are seperated into warps of 32 Threads
+    - thread with consequtive threadIDs are grouped into warps.
+    - warps per block = threads per block / warp_size
+
+- All threads in the warp execute simultaneously on same instruction in SIMT fashion
+on the private data.
