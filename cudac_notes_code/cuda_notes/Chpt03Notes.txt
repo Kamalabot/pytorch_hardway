@@ -51,7 +51,13 @@ Understanding Warp Execution:
 
 - In SMs the threads in the thread blocks are seperated into warps of 32 Threads
     - thread with consequtive threadIDs are grouped into warps.
-    - warps per block = threads per block / warp_size
+    - warps per block = ceil(threads per block / warp_size)
 
 - All threads in the warp execute simultaneously on same instruction in SIMT fashion
 on the private data.
+    - Warp Divergence occurs when threads in same warp execute different execution.
+    - It is possible to assign threads in a warp that follow the same path, as the 
+    thread assignment to a warp depends on the consequtive IDs.
+    - Branch Efficiency = (#Branches - #DivBranches) / #Branches.
+    - Cuda can replace the divergent branches with predicated instruction.
+    In this case the 
