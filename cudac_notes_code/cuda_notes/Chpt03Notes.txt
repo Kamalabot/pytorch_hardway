@@ -60,4 +60,79 @@ on the private data.
     thread assignment to a warp depends on the consequtive IDs.
     - Branch Efficiency = (#Branches - #DivBranches) / #Branches.
     - Cuda can replace the divergent branches with predicated instruction.
-    In this case the 
+    In this case the threads are still executed, just that the instructions are 
+    not doing any work. So CUDA says, its 100% efficient.
+    - Predicated instructions are placed only when the code in each path is 
+    below certain threshold, above that there will be divergence.
+    - If-then-else are executed serially. Try to make the branching in multiple of 
+    warpSize
+    - nvprof --metrics branch_efficiency ./simpleDivergence (to get the efficiency)
+    - nvprof --events branch,divergent_branch ./simpleDivergence (to get numbers of events)
+
+Threads and its limit in a SM:
+    - Number of thread blocks and warps that can simultaneously reside on an SM depends on 
+    num of registers, amount of SM. Threads requires registers, while blocks of threads 
+    require some amount of SM. 
+    - If there is insufficient SM or registers to allocate the threads, then the kernel 
+    launch will fail. Review Table 3-2 for the limits.
+
+Active Block: If the threads in the block is allocated resources like SM and registers, 
+The warps the active block contains is called Active warps. There are further classification.
+    - Selected Warp : warp that is executing
+    - Stalled Warp : if not ready for execution 
+    - Eligible Warp : active warp that is not currently executing
+    Complete resource utilization achieved when all warp scheduler have eligible at 
+    every cycle. 
+
+A warp to execute, the following 2 conditions are required to be true. 
+    - 32 CUDA cores needs to be availabel (1 per thread, there are 32 threads).
+    - All args necessary for instruction is ready.
+    - Number of reqd warps = Latency * Throughput
+
+This simple unit conversion demonstrates that there are two ways to increase parallelism:
+➤ Instruction-level parallelism (ILP): More independent instructions within a thread
+➤ Thread-level parallelism (TLP): More concurrently eligible threads
+
+Required parallelism is expressed as the number of bytes per cycle required to hide memory 
+latency.
+    nvidia-smi -a -q -d CLOCK | fgrep -A 3 "Max Clocks" | fgrep "Memory"  << gives memory frequency.
+    74KB of memory for full utilization
+    
+    74KB / 4 Bytes Per Thread = 18,500 threads (total threads available)
+    18,500 / 32 Threads Per Warp = 579 warps for entire (36 warps)
+
+    Latency hiding depends on the number of active warps per SM. Choosing an optimal execution 
+    configuration is a matter of striking a balance between latency hiding & resource utilization.
+
+    occupancy = active warps / maximum warps (Have enough warps to keep the cores of the device occupied)
+
+Kernel Resource Allocation:
+    - Threads per Block
+    - Registers per Thread
+    - Shared Memory per Block
+    - Impact of thread size:
+        - Small thread blocks will lead to hardware limits on the number of warps per SM to be reached before all 
+        resources are utilized.
+        - Larger thread block will lead to fewer resources per-SM oardware resources.
+
+compiler flags:
+    nvcc compiler has flags which can extract information from the gpu processor
+    --ptxas-options=-v 
+    -maxrregcount=NUM 
+
+nvprof flags:
+    - nvprof --metrics achieved_occupancy (equivalent in ncu)   
+
+Synchronization:
+    - SystemLevel : Wait for all work on both the host and the device to complete.
+    - Block level : Wait for all thread blocks to reach the same point in execution.
+    __device void __syncthreads(void); coordinate communication between threads.
+    Race Conditions:
+        - Thread A tries to read data that is written by thread B in a different warp.
+        - read-after-write, write-after-read and write-after-write. 
+        - sync threads have to be done to avoid race_condition
+    - Blocks can synced from end of kernel execution only.
+Scalability:
+    - Transparent Scalability, ability to execute on a varying number of computer cores. 
+
+
